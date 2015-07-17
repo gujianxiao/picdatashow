@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 
@@ -55,7 +56,8 @@ public class dataimport extends HttpServlet {
         conn=search.getConn();//connect to database
         try{
     	String searchSql="SELECT  location,COUNT(*) from picdata GROUP BY location";                         	
-    	rs=search.executeSQL(searchSql);
+    	rs=search.executeSQL(searchSql);   
+    	JSONArray jsonArray=new JSONArray();
     	JSONObject jsonObject = new JSONObject();
     	while(rs.next())
     	{   
@@ -77,9 +79,46 @@ public class dataimport extends HttpServlet {
     		int count=rs.getInt(2);
             jsonObject.put(location, count);
         }
+    	JSONObject jsonObject2 = new JSONObject();
+    	jsonArray.add(jsonObject);
+    	rs=search.executeSQL(searchSql); 
+    	while(rs.next()){
+    		
+        String location=rs.getString(1);
+
+        
+        for(int i=5;i<8;i++){
+        	int j=i+1;
+        	
+    	searchSql="SELECT  location,COUNT(*) from picdata where time>'2015:0"+i+":00 00:00:00' and time<'2015:0"+j+":00 00:00:00' AND location='"+location+"'";                         	
+    	ResultSet rs2 = search.executeSQL(searchSql);
+    	rs2.next();
+    	int count=rs2.getInt(2);
+    	jsonObject2.put("at"+i+"month", count);  	
+        }
+		if(location.equalsIgnoreCase("北京邮电大学")) location="bjyddx";
+		if(location.equalsIgnoreCase("北邮")) location="by";
+		if(location.equalsIgnoreCase("对外经贸大学")) location="dwjm";
+		if(location.equalsIgnoreCase("北京理工大学")) location="bl";
+		if(location.equalsIgnoreCase("北京大学")) location="bd";
+		if(location.equalsIgnoreCase("北方工业大学")) location="bgd";
+		if(location.equalsIgnoreCase("农展馆")) location="nzg";
+		if(location.equalsIgnoreCase("牡丹园")) location="mdy";
+		if(location.equalsIgnoreCase("芳草地")) location="fcd";
+		if(location.equalsIgnoreCase("中关村")) location="zgc";
+		if(location.equalsIgnoreCase("奥林匹克森林公园")) location="as";
+		if(location.equalsIgnoreCase("天坛")) location="tt";
+		if(location.equalsIgnoreCase("车公庄")) location="cgz";
+		if(location.equalsIgnoreCase("朝阳公园")) location="cygy";
+        jsonObject2.put("location", location);
+    	jsonArray.add(jsonObject2);
+    	
+    	}
+    	System.out.print(jsonArray.toString());
+    	
     	PrintWriter out = response.getWriter();
     	System.out.print(jsonObject);
-    	out.println(jsonObject.toString());
+    	out.println(jsonArray.toString());
     	rs.close();
     	conn.close();
     	out.flush();

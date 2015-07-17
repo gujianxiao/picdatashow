@@ -25,6 +25,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 
   <body>
 <div id="container" style="height: 600px"></div>
+  <div id="container2" style="height: 600px"></div>
   <script type="text/javascript">
   $.ajax({
 	type:'get',
@@ -32,21 +33,21 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
     datatype:'html',
     success:function(data){
         var dataObj=$.parseJSON(data);
-    	var msra=dataObj.MSRA;
-    	var by=dataObj.bjyddx;
-    	by+=dataObj.by;
-    	var dwjm=dataObj.dwjm;
-    	var bgd=dataObj.bgd;
-    	var bl=dataObj.bl;
-    	var cgz=dataObj.cgz;
-    	var as=dataObj.as;
-    	var nzg=dataObj.nzg;
-    	var cygy=dataObj.cygy;
-    	var fcd=dataObj.fcd;
-    	var tt=dataObj.tt;
-    	var mdy=dataObj.mdy;
-    	var zgc=dataObj.zgc;
-    	var bd=dataObj.bd;
+    	var msra=dataObj[0].MSRA;
+    	var by=dataObj[0].bjyddx;
+    	by+=dataObj[0].by;
+    	var dwjm=dataObj[0].dwjm;
+    	var bgd=dataObj[0].bgd;
+    	var bl=dataObj[0].bl;
+    	var cgz=dataObj[0].cgz;
+    	var as=dataObj[0].as;
+    	var nzg=dataObj[0].nzg;
+    	var cygy=dataObj[0].cygy;
+    	var fcd=dataObj[0].fcd;
+    	var tt=dataObj[0].tt;
+    	var mdy=dataObj[0].mdy;
+    	var zgc=dataObj[0].zgc;
+    	var bd=dataObj[0].bd;
     	var count=by+dwjm+bgd+bd+bl+cgz+as+nzg+msra+cygy+fcd+tt+mdy+zgc;
 
     	
@@ -73,8 +74,60 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
         }]
     });
 
-}
+
+
+
+   var options = {
+        chart: {
+            renderTo:'container2',
+            type: 'line'
+        },
+        title: {
+            text: '月图'
+        },
+        subtitle: {
+            text: '各地照片走势'
+        },
+        xAxis: {
+            title: {
+                text: '月份'
+            },
+            categories:['五月','六月','七月']
+        },
+        yAxis: {
+            title: {
+                text: '张数'
+            }
+        },
+        plotOptions: {
+            line: {
+                dataLabels: {
+                    enabled: true
+                },
+                enableMouseTracking: false
+            }
+        },
+        
+        series: 
+        [
+        ]
+
+    };
+   
+    for(var i=1;i<dataObj.length;i++){
+    var seriesOptions = {
+            name: dataObj[i].location,
+            data: [dataObj[i].at5month,dataObj[i].at6month,dataObj[i].at7month]
+        };
+     options.series.push(seriesOptions);
+     }
+     var chart = new Highcharts.Chart(options);
+    
+    }
 })
+
   </script>
+
+  
   </body>
 </html>
